@@ -1,6 +1,7 @@
 <%@page import="com.joeun.test.dto.Board"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%-- <% String root = request.getContextPath(); %> --%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,8 +15,7 @@
 	<p>
 		${ board.content }
 	</p>
-	<!-- root 경로 -->
-	<form action="${ pageContext.request.contextPath }/board/delete" method = "POST">
+	<form action="${ pageContext.request.contextPath }/board/delete" method="POST">
 		<input type="submit" value="삭제">
 	</form>
 </body>

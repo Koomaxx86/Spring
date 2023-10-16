@@ -17,7 +17,15 @@
 	<li><a href="<%= root %>/board/list">list</a></li>
 	<li><a href="<%= root %>/board/insert">insert</a></li>
 	<li><a href="<%= root %>/board/read?boardNo=10">read</a></li>
-	<li><a href="<%= root %>/board/update?boardNo=10">update</a></li>
+	<li><a href="<%= root %>/board/update?boardNo=10"">update</a></li>
 </ul>
 </body>
 </html>
+
+
+
+
+
+
+
+

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.joeun.test.dto.Board;
 
-@Repository		// 데이터 접근 객체로 빈 등록
+@Repository			// 데이터 접근 객체로 빈 등록
 public class BoardDAO {
 	
 	public List<Board> list() {
