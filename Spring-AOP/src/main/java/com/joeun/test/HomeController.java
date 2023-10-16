@@ -52,7 +52,9 @@ public class HomeController {
 		model.addAttribute("board", board);
 		
 		// 게시글 등록 요청
-		// int result = boardService.insert(board);
+		Integer result = boardService.insert(board);
+		logger.info("result : " + result);
+		
 		
 		return "home";
 	}

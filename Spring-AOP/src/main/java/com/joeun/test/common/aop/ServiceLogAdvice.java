@@ -1,11 +1,12 @@
 package com.joeun.test.common.aop;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -31,9 +32,9 @@ public class ServiceLogAdvice {
 	
 	/**
 	 * 어드 바이스 유형
+	 * - Around
 	 * - Before
 	 * - After
-	 * - Around
 	 * - AfterReturning
 	 * - AfterThrowing
 	 */
@@ -48,26 +49,32 @@ public class ServiceLogAdvice {
 	 * - 인수
 	 */
 	@Before("execution(* com.joeun.test.service.BoardService*.*(..))")
-	public void startLog(JoinPoint jp) {
+	public void before(JoinPoint jp) {
 		// jp.getSignature() 	: 타겟 메소드의 시그처 정보(반환타입 패키지.클래스.메소드) 반환
 		// jp.getArgs() 		: 타겟 메소드의 매개변수를 반환
-		logger.info("===========================================");
-		logger.info("Service - @Before");
-		logger.info("startLog : " + jp.getSignature());
-		logger.info("startLog : " + Arrays.toString(jp.getArgs()) );
-		logger.info(jp.getTarget().toString());
+		logger.info("===================================================================");
+		logger.info("[@Before] #########################################################");
+		logger.info("target : " + jp.getTarget().toString());
+		logger.info("signature : " + jp.getSignature());
+		logger.info("args : " + Arrays.toString(jp.getArgs()) );
 		
-		
+		// 파라미터 출력
+		printParam(jp);
+		logger.info("===================================================================\n");
 	}
 	
 	
 	@After("execution(* com.joeun.test.service.BoardService*.*(..))")
-	public void endLog(JoinPoint jp) {
-		logger.info("===========================================");
-		logger.info("Service - @After");
-		logger.info("endLog : " + jp.getSignature());
-		logger.info("endLog : " + Arrays.toString(jp.getArgs()) );
-		logger.info(jp.getTarget().toString());
+	public void after(JoinPoint jp) {
+		logger.info("===================================================================");
+		logger.info("[@After] ##########################################################");
+		logger.info("target : " + jp.getTarget().toString());
+		logger.info("signature : " + jp.getSignature());
+		logger.info("args : " + Arrays.toString(jp.getArgs()) );
+		
+		// 파라미터 출력
+		printParam(jp);
+	    logger.info("===================================================================\n");
 	}
 	
 	/*
@@ -77,48 +84,85 @@ public class ServiceLogAdvice {
 	 * - proceed() 			: 대상 메소드 호출
 	 */
 	@Around("execution(* com.joeun.test.service.BoardService*.*(..))")
-	public void aroundLog(ProceedingJoinPoint jp) {
-		logger.info("===========================================");
-		logger.info("Service - @Around");
+	public Object around(ProceedingJoinPoint jp) {
+		logger.info("===================================================================");
+		logger.info("[@Around] #########################################################");
+		logger.info("target : " + jp.getTarget().toString());
+		logger.info("signature : " + jp.getSignature());
+		logger.info("args : " + Arrays.toString(jp.getArgs()) );
 		LocalDateTime time = LocalDateTime.now();
 		logger.info("현재 시간 : " + time);
 		
-		// 예외 발생시 아래 실행
+		Object result = null;
 		try {
-			Object result = jp.proceed();
+			result = jp.proceed();
+			if( result != null )
+				logger.info("반환값 : " + result.toString());
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			logger.error("예외가 발생했습니다.");
 			e.printStackTrace();
 		}
 		
 		// After, Around 를 함께 사용하려면, Around 어드바이스  에서 After 어드바이스를 호출해준다.
-		endLog(jp);
+		after(jp);
+		logger.info("===================================================================\n");
+		return result;
 	}
+	
 	
 	
 	// pointcut 	: 포인트컷 표현식
 	// returning 	: 타겟 메소드의 반환값을 저장하는 매개변수명 지정
-	@AfterReturning(pointcut = "execution(* com.joeun.test.service.BoardService*.*(..))", returning = "test")
-	public void afterReturnLog(JoinPoint jp, Object test) {
-		logger.info("===========================================");
-		logger.info("Service - @AfterReturning");
-		if( test != null )
-			logger.info("Result : " + test.toString());
+	@AfterReturning(pointcut = "execution(* com.joeun.test.service.BoardServiceImpl.*(..))", returning = "result")
+	public Object afterReturning(JoinPoint jp, Object result) {
+		logger.info("===================================================================");
+		logger.info("[@AfterReturning] #################################################");
+		logger.info("target : " + jp.getTarget().toString());
+		logger.info("signature : " + jp.getSignature());
+		logger.info("args : " + Arrays.toString(jp.getArgs()) );
+		// 파라미터 출력
+		printParam(jp);
+		
+		// 반환값 출력
+		if( result != null )
+			logger.info("반환값 : " + result.toString());
+		
+		logger.info("===================================================================\n");
+		return result;
 	}
 	
 	
 	@AfterThrowing(pointcut = "execution(* com.joeun.test.service.BoardService*.*(..))", throwing ="exception")
-	public void afterThrowingLog(JoinPoint jp, Exception exception) {
-		logger.info("===========================================");
-		logger.info("Service - @AfterThrowing");
+	public void afterThrowing(JoinPoint jp, Exception exception) {
+		logger.info("===================================================================");
+		logger.info("[@AfterThrowing] ##################################################");
+		logger.info("target : " + jp.getTarget().toString());
+		logger.info("signature : " + jp.getSignature());
 		logger.info( exception.toString() ); 
+		logger.info("===================================================================\n");
 	}
 	
-	
+
+	/**
+	 * 파라미터 출력
+	 * @param jp
+	 */
+	public void printParam(JoinPoint jp) {
+		Signature signature = jp.getSignature();
+	    // 타겟 메소드의 파라미터 이름 가져오기
+	    String[] parameterNames = ((MethodSignature) signature).getParameterNames();
+	    // 타겟 메소드의 인수 가져오기
+	    Object[] args = jp.getArgs();
+	    // 파라미터 이름과 값을 출력
+	    if( parameterNames != null )
+	    for (int i = 0; i < parameterNames.length; i++) {
+	        String paramName = parameterNames[i];
+	        Object paramValue = args[i];
+	        logger.info("파라미터명: " + paramName + ", 값: " + paramValue);
+	    }
+	}
 
 }
-
 
 
 

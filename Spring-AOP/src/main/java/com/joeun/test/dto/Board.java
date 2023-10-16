@@ -1,6 +1,6 @@
 package com.joeun.test.dto;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -17,13 +17,14 @@ public class Board {
 	public Board() {
 		
 	}
-	
+
 	public Board(String title, String writer, String content) {
 		this.title = title;
 		this.writer = writer;
 		this.content = content;
 	}
 	
-}
 	
-
+	
+	
+}
