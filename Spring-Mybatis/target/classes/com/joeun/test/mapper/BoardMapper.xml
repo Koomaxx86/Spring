@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.joeun.test.mapper.BoardMapper">
+	<!-- sql 태그 작성 -->
+	
+	<!-- 게시글 목록 -->
+	<!-- id 		: 연결할 매퍼 인터페이스의 메소드명 -->
+	<!-- resultType : 조회 결과를 매핑할 클래스 타입 (패키지경로+클래스명) -->
+<!-- 	<select id="list" resultType="com.joeun.test.dto.Board"> -->
+	<select id="list" resultType="Board">
+		SELECT *
+		FROM board
+		WHERE
+			<if test="searchType == 0">
+		       ( 
+				   title LIKE CONCAT('%', #{keyword}, '%')
+				or writer LIKE CONCAT('%', #{keyword}, '%')
+				or content LIKE CONCAT('%', #{keyword}, '%')
+			   )
+			</if>
+			<if test="searchType == 1">
+				   title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 2">
+				   title LIKE CONCAT('%', #{keyword}, '%')
+				or writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 3">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+		ORDER BY reg_date DESC
+	</select>
+	
+	<select id="list" resultType="Board">
+		SELECT *
+		FROM board
+		WHERE
+			<if test="searchType == 0">
+		       ( 
+				   title LIKE CONCAT('%', #{keyword}, '%')
+				or writer LIKE CONCAT('%', #{keyword}, '%')
+				or content LIKE CONCAT('%', #{keyword}, '%')
+			   )
+			</if>
+			<if test="searchType == 1">
+				   title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 2">
+				   title LIKE CONCAT('%', #{keyword}, '%')
+				or writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 3">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+		ORDER BY reg_date DESC
+	</select>
+	
+	
+	<!-- 게시글 조회 -->
+	<!-- 매핑 파라미터 : #{파라미터명} -->
+	<!-- 			  #{} 파라미터 개수가 1개라면, 이름과 무관하게 매핑된다. -->
+<!-- 	<select id="select" resultType="com.joeun.test.dto.Board"> -->
+	<select id="select" resultType="Board">
+		SELECT *
+		FROM board
+		WHERE board_no = #{boardNo}	
+	</select>
+	
+	<!-- 게시글 등록 -->
+	<!-- Mapper 인터페이스의 넘겨줄 파라미터가 여러 개라면 객체로 매핑할 수 있다. -->
+	<!-- 매개변수로 Board 클래스를 지정하면 변수들이 자동으로 #{변수} 파라미터에 매핑된다.  -->
+	<!-- #{index} 	: 파라미터를 순서대로 index 로 매핑하여 사용할 수도 있다. -->
+	<insert id="insert">
+		INSERT INTO board ( title, writer, content )
+		VALUES ( #{title}, #{writer}, #{content} )
+		<!-- (index로 매핑하는 경우) VALUES ( #{0}, #{1}, #{2} ) -->
+	</insert>
+	
+	<!-- 게시글 수정 -->
+	<update id="update">
+		UPDATE board
+		   SET title = #{title}
+		      ,writer = #{writer}
+		      ,content = #{content}
+		      ,upd_date = now()
+		 WHERE board_no = #{boardNo}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="delete">
+		DELETE FROM board
+		WHERE board_no = #{boardNo}
+	</delete>
+	
+		
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
